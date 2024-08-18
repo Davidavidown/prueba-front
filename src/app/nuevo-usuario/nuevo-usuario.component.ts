@@ -1,8 +1,9 @@
 // nuevo-usuario.component.ts
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-nuevo-usuario',
@@ -19,20 +20,18 @@ export class NuevoUsuarioComponent {
     dateOfBirth: ''
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private authService: AuthService) {}
 
   async onSubmit() {
-    const apiUrl = 'http://localhost:3000/nuevo-usuario'; // Asegúrate de que esta URL coincida
+    this.authService.crearUsuario(this.user).subscribe({
+      next: (data)=>{
+        Swal.fire("Proceso Exitoso", data.message, "success")
+      },
+      error: (error)=>{
+        Swal.fire("Proceso Exitoso", error.message, "error")
+      }
+    })
 
-    try {
-      const response: any = await this.http.post(apiUrl, this.user).toPromise();
-      // Extraer el mensaje de la respuesta
-      const message = response.message;
-      
-      // Mostrar una alerta con el mensaje
-      alert(`${message}`);
-    } catch (error) {
-      alert('Error al enviar los datos');
-    }
+    
   }
 }
